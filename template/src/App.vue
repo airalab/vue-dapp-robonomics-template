@@ -1,14 +1,21 @@
 <template>
   <div id="app">
-    <web3-check :networks="[1]">
+    <web3-check :networks="[network]">
       <router-view />
     </web3-check>
   </div>
 </template>
 
 <script>
+import * as config from './config'
+
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      network: config.NETWORK
+    }
+  }
 }
 </script>
 
