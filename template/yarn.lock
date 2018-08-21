@@ -6811,9 +6811,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-robonomics-js@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/robonomics-js/-/robonomics-js-0.2.2.tgz#dcc823e84a69fc991a6b5599697571d4ae8cb5c1"
+robonomics-js@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/robonomics-js/-/robonomics-js-0.2.5.tgz#21170d71d09a20b81092a7d7f0067e2c98dd0133"
   dependencies:
     base-58 "^0.0.1"
     base-64 "^0.1.0"

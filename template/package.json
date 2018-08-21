@@ -1,8 +1,8 @@
 {
-  "name": "{{ name }}",
+  "name": "dapp-robonomics2018",
   "version": "1.0.0",
-  "description": "{{ description }}",
-  "author": "{{ author }}",
+  "description": "A Vue.js project",
+  "author": "vol4tim <vol4tim@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "robonomics-js": "^0.2.2",
+    "robonomics-js": "^0.2.5",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-web3-check": "^1.0.0",

@@ -1,6 +1,6 @@
 import Robonomics from 'robonomics-js'
 import Provider from './provider'
-import { IPFS_PUBSUB, ENS } from '../config'
+import { IPFS_PUBSUB, ENS, VERSION } from '../config'
 
 let robonomics = null
 const getRobonomics = (lighthouse) => {
@@ -10,7 +10,8 @@ const getRobonomics = (lighthouse) => {
       web3,
       provider: new Provider(socket),
       lighthouse,
-      ens: ENS
+      ens: ENS,
+      version: VERSION
     })
   }
   return robonomics
