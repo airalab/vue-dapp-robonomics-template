@@ -221,8 +221,11 @@ export default {
         })
     },
     setResult (result, check = true) {
-      this.liability.result = result
-      this.liability.check = check
+      this.liability = {
+        ...this.liability,
+        result,
+        check
+      }
     },
     newLiability (liability) {
       console.log('liability ask', liability.address)
