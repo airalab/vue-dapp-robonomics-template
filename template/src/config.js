@@ -1,7 +1,13 @@
 export const NETWORK = 1
-export const LIGHTHOUSE = 'airalab.lighthouse.1.robonomics.eth'
-export const MODEL = 'QmdFh1HPVe7H4LrDio899mxA7NindgxqiNUM9BNnBD7ryS'
-export const OBJECTIVE = 'QmbSW1E73DKUvGDrgx8GirEVfHJLvj8RBijtH9iEZ7UecU'
-export const IPFS_PUBSUB = 'http://127.0.0.1:9999'
+export const VERSION = 3
 export const ENS = ''
-export const VERSION = 1
+export const LIGHTHOUSE = '{{ lighthouse }}.lighthouse.3.robonomics.eth'
+export const MODEL = '{{ model }}'
+export const OBJECTIVE = '{{ objective }}'
+export const IPFS_PUBSUB = 'https://wss.pool.aira.life' // https://github.com/vol4tim/ipfs-api-pubsub-ws
+{{#isToken}}
+export const TOKEN = '{{ token }}'
+{{else}}
+export const TOKEN = null
+{{/isToken}}
+export const PRICE = {{ price }}

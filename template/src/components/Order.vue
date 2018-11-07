@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="!robonomicsStatus" fluid fill-height>
+    <v-container v-if="!robonomicsStatus" fluid fill-height class="ml-0 px-3">
       <v-layout
         justify-center
         align-center
@@ -12,27 +12,27 @@
       </v-layout>
     </v-container>
 
-    <v-container v-if="robonomicsStatus" grid-list-md>
+    <v-container v-if="robonomicsStatus" grid-list-md class="ml-0 px-3">
       <v-layout row wrap>
         <v-flex md12>
           <v-card>
             <v-card-text>
-              <v-container grid-list-md>
+              <v-container grid-list-md class="ml-0 px-3">
                 <v-layout row wrap>
                   <v-flex md12>
-                    Маяк: <a :href="`https://etherscan.io/address/${lighthouse.address}`" target="blank">\{{ lighthouse.name }}</a>
+                    Lighthouse: <a :href="`https://etherscan.io/address/${lighthouse.address}`" target="blank">\{{ lighthouse.name }}</a>
                   </v-flex>
                 </v-layout>
               </v-container>
               <v-divider />
 
-              <v-container grid-list-md>
+              <v-container grid-list-md class="ml-0 px-3">
                 <v-layout row wrap>
                   <v-flex md12>
                     <div>
-                      Стоимость: \{{ price.valueStr }} |
-                      Баланс: <a :href="`https://etherscan.io/token/${balance.address}?a=${account}`" target="blank">\{{ balance.valueStr }}</a> |
-                      Одобренно: \{{ approveTrade.valueStr }}
+                      Cost: \{{ price.valueStr }} |
+                      Balance: <a :href="`https://etherscan.io/token/${balance.address}?a=${account}`" target="blank">\{{ balance.valueStr }}</a> |
+                      Approved: \{{ approveTrade.valueStr }}
                     </div>
                   </v-flex>
                 </v-layout>
@@ -45,7 +45,7 @@
                 color="primary"
                 @click.native="sendApproveTrade"
               >
-                Одобрить
+                Approve
               </v-btn>
 
               <v-btn
@@ -55,7 +55,7 @@
                 color="primary"
                 @click.native="order"
               >
-                Заказать
+                Order
               </v-btn>
 
             </v-card-text>
@@ -66,7 +66,7 @@
           <v-card v-if="liability">
             <v-card-title primary-title>
               <div>
-                <h3 class="headline mb-0">Результат</h3>
+                <h3 class="headline mb-0">Result</h3>
               </div>
             </v-card-title>
             <v-card-text>
@@ -81,17 +81,16 @@
           <v-card>
             <v-card-title primary-title>
               <div>
-                <h3 class="headline mb-0">Спрос</h3>
+                <h3 class="headline mb-0">Demands</h3>
               </div>
             </v-card-title>
             <v-card-text>
-              <p class="t-break" v-for="(item, i) in asks" :key="i">
+              <p class="t-break" v-for="(item, i) in demands" :key="i">
                 <b>account: </b>\{{ item.account }}<br/>
                 <b>model: </b>\{{ item.model }}<br/>
                 <b>objective: </b>\{{ item.objective }}<br/>
                 <b>token: </b>\{{ item.token }}<br/>
                 <b>cost: </b>\{{ item.cost }}<br/>
-                <b>validatorFee: </b>\{{ item.validatorFee }}<br/>
                 <b>deadline: </b>\{{ item.deadline }}
               </p>
             </v-card-text>
@@ -101,17 +100,16 @@
           <v-card>
             <v-card-title primary-title>
               <div>
-                <h3 class="headline mb-0">Предложение</h3>
+                <h3 class="headline mb-0">Offers</h3>
               </div>
             </v-card-title>
             <v-card-text>
-              <p class="t-break" v-for="(item, i) in bids" :key="i">
+              <p class="t-break" v-for="(item, i) in offers" :key="i">
                 <b>account: </b>\{{ item.account }}<br/>
                 <b>model: </b>\{{ item.model }}<br/>
                 <b>objective: </b>\{{ item.objective }}<br/>
                 <b>token: </b>\{{ item.token }}<br/>
                 <b>cost: </b>\{{ item.cost }}<br/>
-                <b>lighthouseFee: </b>\{{ item.lighthouseFee }}<br/>
                 <b>deadline: </b>\{{ item.deadline }}
               </p>
             </v-card-text>
@@ -123,6 +121,7 @@
 </template>
 
 <script>
+import { Token } from 'robonomics-js'
 import getRobonomics from '../utils/robonomics'
 import { formatDecimals, watchTx } from '../utils/utils'
 import Liability from './Liability'
@@ -137,12 +136,15 @@ export default {
   },
   data () {
     return {
+      token: null,
+      decimals: 9,
+      symbol: 'XRT',
       robonomicsStatus: false,
       loadingApprove: false,
       loadingOrder: false,
       price: {
-        value: 1,
-        valueStr: `${formatDecimals(1, 9)} XRT`
+        value: config.PRICE,
+        valueStr: `${formatDecimals(config.PRICE, 9)} XRT`
       },
       balance: {
         address: '',
@@ -160,57 +162,73 @@ export default {
         address: ''
       },
       liability: null,
-      asks: [],
-      bids: []
+      demands: [],
+      offers: []
     }
   },
   created () {
     robonomics = getRobonomics(config.LIGHTHOUSE)
     robonomics.ready().then(() => {
-      this.fetchData()
-        .then(() => {
-          this.robonomicsStatus = true
-          this.balance.address = robonomics.xrt.address
-          this.lighthouse.name = robonomics.lighthouse.name
-          this.lighthouse.address = robonomics.lighthouse.address
-          this.account = robonomics.account
+      let ready
+      if (config.TOKEN) {
+        this.token = new Token(robonomics.web3, config.TOKEN)
+        ready = this.token.call('decimals')
+          .then((decimals) => {
+            this.decimals = decimals
+            return this.token.call('symbol')
+          })
+          .then((symbol) => {
+            this.symbol = symbol
+            this.price.valueStr = `${formatDecimals(this.price.value, this.decimals)} ${this.symbol}`
+            return this.fetchData()
+          })
+      } else {
+        this.token = robonomics.xrt
+        ready = this.fetchData()
+      }
+      ready.then(() => {
+        this.robonomicsStatus = true
+        this.balance.address = this.token.address
+        this.lighthouse.name = robonomics.lighthouse.name
+        this.lighthouse.address = robonomics.lighthouse.address
+        this.account = robonomics.account
 
-          robonomics.getAsk(this.model, (msg) => {
-            this.asks = [{ ...msg }, ...this.asks.slice(0, 10)]
-          })
-          robonomics.getBid(this.model, (msg) => {
-            this.bids = [{ ...msg }, ...this.bids.slice(0, 10)]
-          })
-          robonomics.getResult((msg) => {
-            console.log('result unverified', msg)
-            if (this.liability !== null && msg.liability === this.liability.address) {
-              this.setResult(msg.result, false)
-            }
-          })
+        robonomics.getDemand(this.model, (msg) => {
+          this.demands = [{ ...msg }, ...this.demands.slice(0, 10)]
         })
+        robonomics.getOffer(this.model, (msg) => {
+          this.offers = [{ ...msg }, ...this.offers.slice(0, 10)]
+        })
+        robonomics.getResult((msg) => {
+          console.log('result unverified', msg)
+          if (this.liability !== null && msg.liability === this.liability.address) {
+            this.setResult(msg.result, false)
+          }
+        })
+      })
     })
   },
   methods: {
     fetchData () {
-      return robonomics.xrt.call('balanceOf', [robonomics.account])
+      return this.token.call('balanceOf', [robonomics.account])
         .then((balanceOf) => {
           this.balance.value = balanceOf
-          this.balance.valueStr = `${formatDecimals(balanceOf, 9)} XRT`
+          this.balance.valueStr = `${formatDecimals(balanceOf, this.decimals)} ${this.symbol}`
           if (balanceOf > 0) {
-            return robonomics.xrt.call('allowance', [robonomics.account, robonomics.factory.address])
+            return this.token.call('allowance', [robonomics.account, robonomics.factory.address])
           }
           return false
         })
         .then((allowance) => {
           if (allowance) {
             this.approveTrade.value = allowance
-            this.approveTrade.valueStr = `${formatDecimals(allowance, 9)} XRT`
+            this.approveTrade.valueStr = `${formatDecimals(allowance, this.decimals)} ${this.symbol}`
           }
         })
     },
     sendApproveTrade () {
       this.loadingApprove = true
-      return robonomics.xrt.send('approve', [robonomics.factory.address, (this.price.value * 100)], { from: robonomics.account })
+      return this.token.send('approve', [robonomics.factory.address, (this.price.value * 100)], { from: robonomics.account })
         .then((r) => watchTx(r))
         .then(() => {
           this.loadingApprove = false
@@ -228,37 +246,43 @@ export default {
       }
     },
     newLiability (liability) {
-      console.log('liability ask', liability.address)
+      console.log('liability demand', liability.address)
       return liability.getInfo()
         .then((info) => {
           this.liability = {
             address: liability.address,
-            lighthouse: liability.lighthouse,
             worker: liability.worker,
             ...info
           }
           liability.watchResult((result) => {
-            console.log('result check', result)
+            console.log('result', result)
             this.setResult(result, true)
           })
           return true
+        })
+        .catch((e) => {
+          console.log(e)
+          setTimeout(() => {
+            this.newLiability(liability)
+          }, 2000)
         })
     },
     order () {
       this.liability = null
       this.loadingOrder = true
       web3.eth.getBlock('latest', (e, r) => {
-        const ask = {
+        const demand = {
           objective: config.OBJECTIVE,
-          token: robonomics.xrt.address,
+          token: this.token.address,
           cost: this.price.value,
+          lighthouse: robonomics.lighthouse.address,
           validator: '0x0000000000000000000000000000000000000000',
           validatorFee: 0,
           deadline: r.number + 1000
         }
-        robonomics.postAsk(this.model, ask)
-          .then((liability) => {
-            this.newLiability(liability)
+        robonomics.postDemand(this.model, demand)
+          .then((liability) => this.newLiability(liability))
+          .then(() => {
             this.loadingOrder = false
           })
           .catch((e) => {

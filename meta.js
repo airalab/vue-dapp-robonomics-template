@@ -38,6 +38,41 @@ module.exports = {
       message: 'Project description',
       default: 'A Vue.js project',
     },
+    lighthouse: {
+      type: 'string',
+      required: true,
+      message: 'Name lighthouse',
+      default: 'airalab',
+    },
+    model: {
+      type: 'string',
+      required: true,
+      message: 'IPFS hash model',
+      default: 'QmdFh1HPVe7H4LrDio899mxA7NindgxqiNUM9BNnBD7ryS',
+    },
+    objective: {
+      type: 'string',
+      required: true,
+      message: 'IPFS hash objective',
+      default: 'QmbSW1E73DKUvGDrgx8GirEVfHJLvj8RBijtH9iEZ7UecU',
+    },
+    isToken: {
+      type: 'confirm',
+      message: 'Set up payment token address',
+      default: true,
+    },
+    token: {
+      when: 'isToken',
+      type: 'string',
+      required: true,
+      message: 'Payment token address'
+    },
+    price: {
+      type: 'number',
+      required: true,
+      message: 'Default price',
+      default: 1
+    },
     author: {
       type: 'string',
       message: 'Author',
