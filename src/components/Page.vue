@@ -25,7 +25,6 @@
     >Approve</button>
 
     <button v-if="approveTrade >= price" @click="order">Order</button>
-    <button v-if="approveTrade >= price" @click="broadcasting">Order</button>
 
     <div v-if="liability">
       <h3>Liability</h3>
