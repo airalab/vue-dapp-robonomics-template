@@ -1,17 +1,17 @@
-// export const CHAIN_ID = 1;
-// export const ROBONOMICS = {
-//   version: 5,
-//   ens: '',
-//   ensSuffix: 'eth',
-//   lighthouse: 'airalab.lighthouse.5.robonomics.eth'
-// };
-export const CHAIN_ID = 4;
+export const CHAIN_ID = 1;
 export const ROBONOMICS = {
   version: 5,
-  ens: '0x9D70a7ecf0834ca14969f676e54834F12eaE5E10',
+  ens: '',
   ensSuffix: 'eth',
   lighthouse: 'airalab.lighthouse.5.robonomics.eth'
 };
+// export const CHAIN_ID = 4;
+// export const ROBONOMICS = {
+//   version: 5,
+//   ens: '0x9D70a7ecf0834ca14969f676e54834F12eaE5E10',
+//   ensSuffix: 'eth',
+//   lighthouse: 'airalab.lighthouse.5.robonomics.eth'
+// };
 
 export const MODEL = 'QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW';
 export const OBJECTIVE = 'Qmbm3o2wkqseSEi5F69CPAuDrsKnrwTJ3HN5FVLPgLHKUm';
