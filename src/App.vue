@@ -2,7 +2,7 @@
   <div id="app">
     <web3-check>
       <div>
-        <Page v-if="ready"/>
+        <Page v-if="ready" />
         <div v-else>Initialization Robonomics</div>
       </div>
     </web3-check>
@@ -27,9 +27,13 @@ export default {
     };
   },
   mounted() {
-    Web3Check.store.on("load", () => {
+    Web3Check.store.on("load", state => {
       getIpfs().then(ipfs => {
-        Vue.prototype.$robonomics = initRobonomics(ipfs);
+        Vue.prototype.$robonomics = initRobonomics(
+          state.web3,
+          state.account,
+          ipfs
+        );
         this.$robonomics.ready().then(() => {
           this.ready = true;
         });
